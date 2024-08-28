@@ -1,7 +1,7 @@
 
 <template>
   <h1>Food</h1>
-  <p>Food items are generated with v-for from the 'foods' array.</p>
+  <p>ssFood items are generated with v-for from the 'foods' array.</p>
   <div id="wrapper">
     <food-item
       v-for="(x, index) in foods"
