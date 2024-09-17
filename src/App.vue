@@ -1,8 +1,8 @@
-
 <template>
+  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
   <h1>Food</h1>
   <p>ssFood items are generated with v-for from the 'foods' array.</p>
-  <div id="wrapper">
+  <!-- <div id="wrapper">
     <food-item
       v-for="(x, index) in foods"
       :key="index"   
@@ -10,8 +10,9 @@
       :food-desc="x.desc"
       :is-favorite="x.favorite"/>
       <hello-world/>
-  </div> 
-
+  </div>  -->
+  <div>
+  </div>
   <div>
     <p>{{ "Moose count: " + count }}</p>
     <button @click="count++">Count</button>
@@ -33,6 +34,7 @@
     <p v-else>
       Not in stock
     </p>
+    <p>Test for Vue.js</p>
   </div>
 
   <div id="pizzImg">
@@ -60,7 +62,6 @@
   <div id="divComp">
     <component :is="activeComp"></component>
   </div>
-
 
   <h1>Form</h1>
   <form @submit.prevent="registerAnswer">
@@ -120,17 +121,46 @@
     <h3>Submitted answer:</h3>
     <p id="pAnswer" v-if="submitted">{{ formData }}</p>
   </div><br>
-  <div>
+  <!-- <div>
     <button @click="fetchData">Fetch Data from HTTP request</button>
     <p v-if="data">{{ data }}</p>
+  </div> -->
+  <!-- <div class="tracker">
+      <h4>{{ text }} <button @click="addTask()" class="btn">Add Task</button></h4>
+      <add-task @add-task="addTask"/>
+      <task-collection />
+  </div> -->
+
+  <div class="container">
+    <Header
+      @toggle-add-task="toggleAddTask"
+      title="Task Tracker"
+      :showAddTask="showAddTask"
+    />
+    <div v-show="showAddTask">
+      <AddTask @add-task="addTask"/>
+    </div>
+    
+    <Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" :tasks="tasks" />
+    <!-- <router-view :showAddTask="showAddTask"></router-view> -->
   </div>
-  
 </template>
 
 <script>
+import Header from './components/Header'
+import Tasks from './components/Tasks'
+import AddTask from './components/AddTask'
+
 export default {
+  components: {
+    Header,
+    Tasks,
+    AddTask
+  },
   data() { 
     return {
+      showAddTask: false,
+      tasks:[],
       foods: [
         { name: 'Apples', 
           desc: 'Apples are a type of fruit that grow on trees.', 
@@ -147,7 +177,7 @@ export default {
         { name: 'Cake', 
           desc: 'Cake is something sweet that tastes good.', 
           favorite: false },
-        {name: 'test',
+        { name: 'test',
           desc: 'This is test',
           favorite: false
         }
@@ -156,7 +186,7 @@ export default {
       count: 0,
       lightOn: false,
       typewriterCount: 4,
-      text: 'I like taco, pizza, Thai beef salad, pho soup and tagine.',
+      text: 'Task Tracker',
       showDiv: true,
       manyFoods: [
         {name: 'Burrito', url: 'img_burrito.svg'},
@@ -173,7 +203,8 @@ export default {
         { name: 'Apple', imgUrl: 'img_apple.svg' },
         { name: 'Cake', imgUrl: 'img_cake.svg' },
         { name: 'Fish', imgUrl: 'img_fish.svg' },
-        { name: 'Rice', imgUrl: 'img_rice.svg' }
+        { name: 'Rice', imgUrl: 'img_rice.svg' },
+        { name: 'Grape', imgUrl: 'img_rice.svg'}
       ],
         justForAddress:[
           {city: "pune" },
@@ -200,12 +231,15 @@ export default {
         setPass:''
       },
       submitted: false,
-      visited: false
+      visited: false,
+      SubmitEvent: true,
+
+
       
     };
   },
-  methods: {
   
+  methods: {
     async fetchData() {
       const response = await fetch("https://reqres.in/api/users?page=2");
       this.data = await response.text();
@@ -216,13 +250,94 @@ export default {
     },
     updateVal(e) {
       this.fileInp = e.target.value;
+    },
+    async addTask(task){
+      const res = await fetch('api/tasks',{
+        method: 'POST',
+        headers:{
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify(task),
+      })
+      const data = await res.json()
+      this.tasks = [...this.tasks,data]
+    },
+    toggleAddTask() {
+      this.showAddTask = !this.showAddTask
+    },
+    async deleteTask(id){
+      if(confirm("Are you sure?")){
+        const res  = await fetch('api/tasks/${id}',{
+          method: 'DELETE',
+        })
+        console.log("dfsdfsd=",res)
+        res.status === 200 ? (this.tasks = this.tasks.filter((task) => task.id !== id)) : alert('Error in deleteing Task')
+        // this.tasks = this.tasks.filter((task) => task.id !== id)
+      }
+    },
+    toggleReminder(id){
+      this.tasks = this.tasks.map((task) => task.id === id ? { ...task,reminder: !task.reminder} : task)
+    },
+    async fetchTasks(){
+      const res = await fetch('api/tasks')
+      const data = await res.json()
+      return data
     }
+  },
+  // async created(){
+  //   this.tasks = [
+  //     {
+  //       "id": "1",
+  //       "text": "Doctors Appointment",
+  //       "day": "March 5th at 2:30pm",
+  //       "reminder": true
+  //     },
+  //     {
+  //       "id": "2",
+  //       "text": "Meeting with boss",
+  //       "day": "March 6th at 1:30pm",
+  //       "reminder": true
+  //     },
+  //     {
+  //       "id": "3",
+  //       "text": "Food shopping",
+  //       "day": "March 7th at 2:00pm",
+  //       "reminder": false
+  //     }
+  //   ]
+    
+  // }
+  async created(){
+    this.tasks = await this.fetchTasks()
+    
   }
 }
 </script>
 
-<style>
-  #wrapper {
+<style scoped>
+.container{
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.tracker{
+  border: 1px solid;
+  height: auto;
+  width: 500px;
+  margin-left: 400px;
+}
+.tracker h4{
+  text-align: left;
+  padding: 0px 0px 0px 35px;
+}
+.tracker button{
+  text-align: right;
+  background: green;
+  color: aliceblue;
+  padding: 5px;
+  margin-left: 240px;
+}
+ #wrapper {
     display: flex;
     flex-wrap: wrap;
   }
@@ -285,3 +400,5 @@ export default {
     margin: 10px;
   }
 </style>
+
+

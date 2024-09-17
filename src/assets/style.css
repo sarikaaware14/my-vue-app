@@ -1,0 +1,62 @@
+#wrapper {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  #wrapper > div {
+    border: dashed rgb(244, 194, 194) 1px;
+    flex-basis: 120px;
+    margin: 10px;
+    padding: 10px;
+    background-color: lightgreen;
+  }
+  #lightDiv {
+    position: relative;
+    width: 150px;
+    height: 150px;
+  }
+  #lightDiv > img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  #lightDiv > div {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    background-color: yellow;
+  }
+  
+  #pizzImg{
+    border: dashed black 1px;
+    width: 130px;
+    padding: 0 20px 20px 20px;
+    font-weight: bold;
+    background-color: lightgreen;
+    height: 170px;
+  }
+  #pizzImg img {
+    width: 100px;
+    height: 100px;
+  }
+
+  #vshow {
+    padding: 20px;
+    background-color: lightgreen;
+    font-weight: bold;
+  }
+
+  .divBtn {
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    background-color: white;
+    border: solid 2px #04AA6D;
+    border-radius: 10px;
+    font-family: Verdana,sans-serif;
+    color: black;
+    padding: 10px;
+    margin: 10px;
+  }
