@@ -16,11 +16,29 @@
       "id": "3",
       "text": "Food shopping",
       "day": "March 7th at 2:00pm",
-      "reminder": false
+      "reminder": true
     },
     {
-      "id": 7325,
+      "id": "7325",
       "text": "How to make templaet",
+      "day": "Monday",
+      "reminder": true
+    },
+    {
+      "id": "1d1c",
+      "text": "Prview work",
+      "day": "Monday",
+      "reminder": true
+    },
+    {
+      "id": "9687",
+      "text": "Create this task",
+      "day": "satureday",
+      "reminder": true
+    },
+    {
+      "id": "6b34",
+      "text": "UI changes",
       "day": "Monday",
       "reminder": true
     }

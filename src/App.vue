@@ -53,9 +53,9 @@
   <p>Choose what part of this page you want to see:</p>
   <router-link to="/animals">Animals </router-link>
   <router-link to="/food">Food</router-link><br>
-  <div>
+  <!-- <div>
     <router-view></router-view>
-  </div>
+  </div> -->
 
   <div @click="this.activeComp = 'food-item'" class="divBtn">About</div>
   <div @click="this.activeComp = 'animal-collection'" class="divBtn">Kinds</div>
@@ -121,6 +121,7 @@
     <h3>Submitted answer:</h3>
     <p id="pAnswer" v-if="submitted">{{ formData }}</p>
   </div><br>
+  
   <!-- <div>
     <button @click="fetchData">Fetch Data from HTTP request</button>
     <p v-if="data">{{ data }}</p>
@@ -141,7 +142,7 @@
       <AddTask @add-task="addTask"/>
     </div>
     
-    <Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" :tasks="tasks" />
+    <Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" @edit-task="editTask" :tasks="tasks" />
     <!-- <router-view :showAddTask="showAddTask"></router-view> -->
   </div>
 </template>
@@ -221,7 +222,9 @@ export default {
       },
 
       formData: {
-        txtInp: '',
+        text: '',
+        reminder:'',
+        day:'',
         colorInp: '',
         carsSelected: [],
         carSelected: '',
@@ -232,10 +235,7 @@ export default {
       },
       submitted: false,
       visited: false,
-      SubmitEvent: true,
-
-
-      
+      SubmitEvent: true,      
     };
   },
   
@@ -246,7 +246,7 @@ export default {
     },
     registerAnswer() {
       this.submitted = true;
-      console.log(this.formData);
+      // this.submitted = false;
     },
     updateVal(e) {
       this.fileInp = e.target.value;
@@ -267,22 +267,54 @@ export default {
     },
     async deleteTask(id){
       if(confirm("Are you sure?")){
-        const res  = await fetch('api/tasks/${id}',{
+        const res  = await fetch(`api/tasks/${id}`,{
           method: 'DELETE',
         })
-        console.log("dfsdfsd=",res)
         res.status === 200 ? (this.tasks = this.tasks.filter((task) => task.id !== id)) : alert('Error in deleteing Task')
         // this.tasks = this.tasks.filter((task) => task.id !== id)
       }
     },
-    toggleReminder(id){
-      this.tasks = this.tasks.map((task) => task.id === id ? { ...task,reminder: !task.reminder} : task)
+   
+    async editTask(id){
+        
+      const taskToEdit = await this.fetchTask(id);
+      this.showAddTask = true;
+      this.formData = {
+        text: taskToEdit.text,  
+        day: taskToEdit.day,      
+        reminder: taskToEdit.reminder 
+      };
+    },
+
+    async toggleReminder(id){
+      // this.tasks = this.tasks.map((task) => task.id === id ? { ...task,reminder: !task.reminder} : task)
+        const taskToToggle = await this.fetchTask(id)
+        const updTask = { ...taskToToggle, reminder: !taskToToggle.reminder }
+  
+        const res = await fetch(`api/tasks/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify(updTask),
+        })
+  
+        const data = await res.json()
+  
+        this.tasks = this.tasks.map((task) =>
+          task.id === id ? { ...task, reminder: data.reminder } : task
+        )
     },
     async fetchTasks(){
       const res = await fetch('api/tasks')
       const data = await res.json()
       return data
-    }
+    },
+    async fetchTask(id) {
+        const res = await fetch(`api/tasks/${id}`)
+        const data = await res.json()
+        return data
+      },
   },
   // async created(){
   //   this.tasks = [

@@ -3,7 +3,11 @@
     >
       <h3>
         {{ task.text }}
-        <i @click="$emit('delete-task', task.id)" class="fas fa-times"></i>
+        <div class="btnIcon">
+          <i @click="$emit('edit-task', task.id)" class="fas fa-pencil"></i>
+          <i @click="$emit('delete-task', task.id)" class="fas fa-times"></i>
+        </div>
+        
       </h3>
       <p>{{ task.day }}</p>
     </div>
@@ -52,5 +56,8 @@
     justify-content: space-between;
     margin-top: 10px !important;
   }
+  .btnIcon i.fas {
+    padding: 10px;
+}
   </style>
   

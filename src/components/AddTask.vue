@@ -25,13 +25,35 @@
   <script>
   export default {
     name: 'AddTask',
-    data() {
-      return {
+    props: {
+    taskData: {
+      type: Object,
+      required: true,
+      default: () => ({
         text: '',
         day: '',
         reminder: false,
+      }),
+    },
+  },
+    data() {
+      return {
+        text: this.taskData.text,
+        day: this.taskData.day,
+        reminder: this.taskData.reminder,
       }
     },
+    watch: {
+    taskData: {
+      handler(newData) {
+        this.text = newData.text;
+        this.day = newData.day;
+        this.reminder = newData.reminder;
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
     methods: {
       onSubmit(e) {
         e.preventDefault()
